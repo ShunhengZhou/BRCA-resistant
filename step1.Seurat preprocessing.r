@@ -13,10 +13,10 @@ raw_counts_CD44H_7d<-read.table(file="MCF7_WM7d_CD44H.No_2129.txt",sep="\t")
 gene.df <- bitr(rownames(raw_counts_CD44H_2d) , fromType = "ENSEMBL",
         toType = c("ENTREZID", "SYMBOL"),
         OrgDb = org.Hs.eg.db)
-gene.df<-gene.df[!duplicated(gene.df[,c('ENSEMBL')]),] ##一个id对应多个symbol
-gene.df<-gene.df[!duplicated(gene.df[,c('SYMBOL')]),] ##一个id对应多个symbol
+gene.df<-gene.df[!duplicated(gene.df[,c('ENSEMBL')]),] 
+gene.df<-gene.df[!duplicated(gene.df[,c('SYMBOL')]),] 
 get_intersect_gene<-function(expr){
-	features <- rownames(expr)[rownames(expr) %in% gene.df$ENSEMBL]   ##交集基因###########
+	features <- rownames(expr)[rownames(expr) %in% gene.df$ENSEMBL]   ##common genes##########
 	new.gene.df<-gene.df[gene.df$ENSEMBL %in% features,]
 	expr <- expr[rownames(expr) %in% features,]
 	rownames(expr)<-as.vector(new.gene.df$SYMBOL)
@@ -40,12 +40,3 @@ MCF7_H <- CreateSeuratObject(cbind(raw_counts_CD44H, raw_counts_CD44H_2d,raw_cou
 MCF7_H@meta.data$stim <- c(rep("0d", ncol(raw_counts_CD44H)), rep("2d", ncol(raw_counts_CD44H_2d)), 
     rep("4d", ncol(raw_counts_CD44H_4d)), rep("7d", ncol(raw_counts_CD44H_7d)))#
 save(MCF7_H,file="MCF7_H.rds")
-#########  统计每个cluster的数目 ####################################
-cells<-table(Idents(MCF7_H))   
-write.table(cells,"Num_of_cell_of_each_cluster.txt",sep="\t",quote=F)
-
-
-
-
-
-
